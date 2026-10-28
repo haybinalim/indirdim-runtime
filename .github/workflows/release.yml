@@ -1,0 +1,109 @@
+name: release
+
+# R0-4: derleme hattını baştan koşar, çıktıyı doğrular ve değişmez bir GitHub
+# Release'i build provenance attestation'ıyla yayımlar. Secret yok; yalnızca
+# GITHUB_TOKEN (contents: write, id-token: write, attestations: write).
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Taslağı yayımla (false: yalnızca taslak release)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Derleme hattı
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    name: Yayım
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: r0-output
+          path: out/r0
+      - name: Etiket boş olmalı
+        run: |
+          TAG=$(jq -r .release.tag inputs.lock)
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "ART=$(jq -r .release.artifact inputs.lock)" >> "$GITHUB_ENV"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "release $TAG already exists"; exit 1
+          fi
+          if git ls-remote --exit-code --tags "https://github.com/$GITHUB_REPOSITORY" "refs/tags/$TAG" >/dev/null; then
+            echo "tag $TAG already exists"; exit 1
+          fi
+      - name: Varlıklar (AAR, GPL kaynakları, lisanslar, SOURCES.md)
+        run: |
+          set -euo pipefail
+          A=out/assets; mkdir -p "$A"
+          cp out/r0/$ART out/r0/diff-manifest.txt out/r0/sbom.cdx.json "$A/"
+          (cd out/r0 && sha256sum -c SHA256SUMS)
+          python3 scripts/fetch_inputs.py --only none --gpl-sources --out work/inputs
+          cp work/inputs/gpl-sources/* "$A/"
+          # termux-packages subset at the commit matching the upstream build (deterministic tar)
+          C=$(jq -r .gpl_sources.upstream_termux_commit inputs.lock)
+          mkdir -p work/tp && git -C work/tp init -q
+          git -C work/tp fetch -q --depth 1 https://github.com/termux/termux-packages "$C"
+          git -C work/tp archive --format=tar --prefix="termux-recipes-$C/" FETCH_HEAD \
+            build-package.sh scripts packages/readline packages/gdbm packages/python packages/ncurses \
+            | gzip -n -9 > "$A/termux-recipes-$C.tar.gz"
+          tar --sort=name --mtime='2026-10-28 00:00Z' --owner=0 --group=0 --numeric-owner \
+            -cf - LICENSE NOTICE SOURCE-OFFER.md licenses | gzip -n -9 > "$A/licenses.tar.gz"
+          cp NOTICE SOURCE-OFFER.md "$A/"
+          python3 scripts/sources_md.py --assets "$A" --out "$A/SOURCES.md"
+          (cd "$A" && sha256sum $(ls | grep -v '^SHA256SUMS$' | sort) > SHA256SUMS && cat SHA256SUMS)
+      - name: Build provenance attestation
+        id: attest
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            out/assets/${{ env.ART }}
+            out/assets/sbom.cdx.json
+            out/assets/SHA256SUMS
+      - name: Attestation doğrulaması
+        run: |
+          gh attestation verify "out/assets/$ART" --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml"
+      - name: Taslak release
+        run: |
+          SHA=$(sha256sum "out/assets/$ART" | cut -d' ' -f1)
+          {
+            echo "İndirdim gömülü Python runtime'ı, R0. Ayrıntı: README ve diff-manifest.txt."
+            echo
+            echo "- curl_cffi 0.17.0 (arm64-v8a; libcurl 8.23.0), cffi 2.1.1, brotli 1.2.1 (Python + C), certifi 2026.10.23 + cert.pem, urllib3 2.8.0, yt-dlp 2026.10.26"
+            echo "- Kapanan yayımlanmış kayıtlar: GHSA-6q48-6c7w-9gw2 (certifi/cert.pem), GHSA-9v8h-qqgm-4m35 / CVE-2026-111497 (brotli), CVE-2026-92392 (libcurl 8.15.0), urllib3 CVE-2026-97689"
+            echo
+            echo "\`$ART\` SHA-256: \`$SHA\`"
+            echo
+            echo "Doğrulama: \`gh attestation verify $ART --repo $GITHUB_REPOSITORY\`"
+            echo
+            echo "Attestation: ${{ steps.attest.outputs.attestation-url }}"
+            echo
+            echo "GPL kaynak sunumu: SOURCE-OFFER.md; kaynak dosyaları bu release'te (SOURCES.md)."
+          } > out/notes.md
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --draft \
+            --title "$TAG" --notes-file out/notes.md out/assets/*
+      - name: Yayımla
+        if: inputs.publish
+        run: gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
