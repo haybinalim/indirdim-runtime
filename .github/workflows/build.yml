@@ -1,0 +1,82 @@
+name: build
+
+# Yeniden kullanılabilir derleme hattı (ci.yml ve release.yml çağırır). Secret yok.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: Native (${{ matrix.arch }}, derleme ${{ matrix.build }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [aarch64, arm, i686, x86_64]
+        build: [1, 2]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Termux tarifleriyle derle
+        run: scripts/build_native.sh "${{ matrix.arch }}" out/native
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-${{ matrix.arch }}-b${{ matrix.build }}
+          path: out/native
+          retention-days: 7
+          if-no-files-found: error
+
+  native-check:
+    name: Native denetimleri (${{ matrix.abi }})
+    needs: native
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: aarch64, abi: arm64-v8a }
+          - { arch: arm, abi: armeabi-v7a }
+          - { arch: i686, abi: x86 }
+          - { arch: x86_64, abi: x86_64 }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --require-hashes --no-deps -r requirements/tools.txt
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: native-${{ matrix.arch }}-b1
+          path: out/b1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: native-${{ matrix.arch }}-b2
+          path: out/b2
+      - name: Upstream ağacı + native katman
+        run: |
+          python scripts/fetch_inputs.py --only upstream_aar
+          python scripts/ziptree.py extract-aar work/inputs/ytdlnis_packages.python-3.14.6.aar ${{ matrix.abi }} work/up
+          cp -a work/up work/new
+          cp -a out/b1/${{ matrix.abi }}/usr/. work/new/usr/
+      - name: ELF kapıları (16 KB, SONAME, DT_NEEDED, semboller)
+        run: |
+          files=$(python -c "import json;print(' '.join(k for k in json.load(open('out/b1/${{ matrix.abi }}/native-manifest.json'))['files'] if k.endswith('.so')))")
+          python scripts/elfcheck.py --tree work/new --upstream-tree work/up --abi ${{ matrix.abi }} \
+            --ndk-sysroot "$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
+            --json out/elfcheck-native-${{ matrix.abi }}.json $files
+      - name: İki bağımsız derlemenin karşılaştırması
+        run: |
+          mkdir -p out/c1 out/c2
+          cp -a out/b1/${{ matrix.abi }} out/c1/ && cp -a out/b2/${{ matrix.abi }} out/c2/
+          python scripts/compare_native.py out/c1 out/c2 out/native-repro-${{ matrix.abi }}.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-report-${{ matrix.abi }}
+          path: out/*.json
+          retention-days: 7
