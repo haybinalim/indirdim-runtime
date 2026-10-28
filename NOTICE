@@ -1,0 +1,96 @@
+indirdim-runtime
+================
+
+This repository's own scripts are licensed under the GNU General Public License
+version 3 (see LICENSE). They are an attributed derivative of
+scripts/build_python.sh from https://github.com/deniscerri/ytdlnis-packages
+(GPL-3.0, commit c32745216eab2c643643374bb1153fc018086665), Copyright (c) Denis Çerri
+and contributors.
+
+The released artifact (runtime-python-<version>-r<N>.aar) redistributes the
+third-party components listed below. Each component remains under its own
+license. The full license texts are in the licenses/ directory of this
+repository and are attached to every release (licenses.tar.gz). Where a
+component's license file is also shipped inside the runtime zip
+(usr/lib/python3.14/site-packages/*.dist-info/), that copy applies as well.
+
+Versions marked (R0) are the ones R0 changes; everything else is copied byte
+for byte from the upstream AAR io.github.deniscerri:ytdlnis_packages.python:3.14.6
+(SHA-256 ce6d36f9eff8d4c0ee1440f613285e5112ff1d8713a3a4d8d6f996d44200b115),
+which was built with the Termux build system (termux-packages; the upstream
+build did not record its commit; versions match commit
+2935d0eeff6eb9270227a72dc3d87bbce9c938de, the last commit before the upstream
+build time 2026-07-12 07:06 UTC; inferred).
+
+Component                      Version            License (SPDX)                         Text in licenses/
+-----------------------------  -----------------  -------------------------------------  -----------------------------
+Packages R0 changes or adds
+curl_cffi (arm64-v8a only)     0.17.0 (R0)        MIT                                    curl_cffi.txt
+  statically linked in curl_cffi/_wrapper.abi3.so (versions per curl-impersonate v2.3.1 CMakeLists.txt):
+  curl-impersonate             2.3.1              MIT                                    curl-impersonate.txt
+  curl (libcurl)               8.23.0             curl                                   curl.txt
+  BoringSSL                    156c7b75ae9b8c3b   Apache-2.0 AND ISC AND OpenSSL         boringssl.txt
+  nghttp2                      1.63.0             MIT                                    nghttp2.txt
+  ngtcp2                       1.20.0             MIT                                    ngtcp2.txt
+  nghttp3                      1.15.0             MIT                                    nghttp3.txt
+  c-ares                       1.34.9             MIT                                    c-ares.txt
+  brotli                       1.2.1              MIT                                    brotli.txt
+  zstd                         1.5.7              BSD-3-Clause (dual GPL-2.0; BSD used)  zstd.txt
+  zlib                         1.3.1              Zlib                                   zlib.txt
+  libc++ (curl_cffi.libs/libc++_shared-*.so)      Apache-2.0 WITH LLVM-exception         llvm-libcxx.txt
+cffi (arm64-v8a only)          2.1.1 (R0)         MIT                                    cffi.txt
+brotli (Python) + libbrotli*   1.2.1 (R0)         MIT                                    brotli.txt
+certifi                        2026.10.23 (R0)    MPL-2.0                                certifi.txt, mpl-2.0.txt
+usr/etc/tls/cert.pem           = certifi 2026.10.23 cacert.pem (R0), MPL-2.0; unmodified copy.
+                               Source form: https://pypi.org/project/certifi/2026.10.23/
+urllib3                        2.8.0 (R0)         MIT                                    urllib3.txt
+yt-dlp (res/raw/ytdlp)         2026.10.26 (R0)    Unlicense                              yt-dlp.txt
+  yt-dlp-ejs (inside yt-dlp)   0.8.0              Unlicense                              yt-dlp-ejs.txt
+
+Unchanged upstream content
+CPython                        3.14.6             PSF-2.0                                cpython.txt
+OpenSSL                        3.6.3              Apache-2.0                             openssl.txt
+QuickJS (libqjs.so)            2025-04-26         MIT                                    quickjs.txt
+GNU Readline                   8.3 (patch 3)      GPL-3.0-or-later                       ../LICENSE   (see SOURCE-OFFER.md)
+GNU gdbm (+ gdbm_compat)       1.26               GPL-3.0-or-later                       ../LICENSE   (see SOURCE-OFFER.md)
+ncurses                        6.5 (20250830)     X11 (MIT-style)                        ncurses.txt
+SQLite                         3.53.3             blessing (public domain)               -
+Expat                          2.8.2              MIT                                    expat.txt
+libffi                         3.5.2              MIT                                    libffi.txt
+xz / liblzma                   5.8.3              0BSD                                   xz.txt, xz-0BSD.txt
+bzip2 / libbz2                 1.0.8              bzip2-1.0.6                            bzip2.txt
+zlib                           1.3.2              Zlib                                   zlib.txt
+zstd                           1.5.7              BSD-3-Clause (dual GPL-2.0; BSD used)  zstd.txt
+Tcl / Tk                       8.6.14             TCL                                    tcl.txt, tk.txt
+FreeType                       2.14.3             FTL (dual GPL-2.0; FTL used)           freetype-FTL.txt
+Fontconfig                     2.18.2             MIT-style (see text)                   fontconfig.txt
+libpng                         1.6.58             libpng-2.0                             libpng.txt
+libX11                         1.8.13             MIT AND X11                            libx11.txt
+libxcb                         1.17.0             X11                                    libxcb.txt
+libXau                         1.0.12             MIT-open-group                         libxau.txt
+libXdmcp                       1.1.5              MIT-open-group                         libxdmcp.txt
+libXext                        1.3.7              MIT AND HPND AND ISC                   libxext.txt
+libXft                         2.3.9              HPND-sell-variant                      libxft.txt
+libXrender                     0.9.12             HPND-sell-variant                      libxrender.txt
+libXScrnSaver                  1.2.5              X11                                    libxss.txt
+libc++_shared.so (NDK r29)     LLVM               Apache-2.0 WITH LLVM-exception         llvm-libcxx.txt
+libandroid-support             v29                Apache-2.0 AND MIT                     libandroid-support.txt, apache-2.0.txt
+libandroid-posix-semaphore     0.1                MIT                                    libandroid-posix-semaphore.txt
+libcrypt (Termux crypt3)       0.2                BSD-2-Clause                           libcrypt-termux.txt
+requests                       2.34.2             Apache-2.0                             requests.txt, requests-NOTICE.txt
+idna                           3.18               BSD-3-Clause                           idna.txt
+charset-normalizer             3.4.9              MIT                                    charset-normalizer.txt
+websockets                     16.1               BSD-3-Clause                           websockets.txt
+mutagen                        1.48.1             GPL-2.0-or-later                       mutagen.txt, gpl-2.0.txt
+                               (pure Python; its complete source is the shipped .py files themselves)
+pycryptodomex                  3.23.0             BSD-2-Clause AND Unlicense             pycryptodomex.txt
+pycparser                      2.22               BSD-3-Clause                           pycparser.txt
+pip                            26.1.2             MIT (vendored packages: see pip-*.dist-info/licenses/ in the zip)  pip.txt
+
+Notes
+- The curl_cffi Android wheel ships only curl_cffi's own MIT license; the
+  notices of the libraries statically linked into it are provided here.
+- "R0" components built in this repository (cffi, brotli) are compiled from the
+  pinned source tarballs in inputs.lock with the pinned termux-packages recipes.
+- Licence texts were taken from each project's repository at the tag/commit
+  listed in licenses/SOURCES.tsv.
