@@ -1,0 +1,394 @@
+{
+ "_comment": "Static SBOM metadata for R0 (scripts/sbom.py adds hashes). scope r0 = changed by R0, upstream = copied unchanged from the upstream AAR. Versions of statically linked libcurl components per curl-impersonate v2.3.1 CMakeLists.txt.",
+ "components": [
+  {
+   "name": "curl_cffi",
+   "version": "0.17.0",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:pypi/curl-cffi@0.17.0",
+   "vcs": "https://github.com/lexiforest/curl_cffi",
+   "commit": "ae03f3702678b76a2500746e1a5a7ccd1d7f6302",
+   "note": "official PyPI wheel cp314 android_24_arm64_v8a, PyPI attestation verified",
+   "abis": [
+    "arm64-v8a"
+   ]
+  },
+  {
+   "name": "curl-impersonate",
+   "version": "2.3.1",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:github/lexiforest/curl-impersonate@v2.3.1",
+   "vcs": "https://github.com/lexiforest/curl-impersonate",
+   "commit": "98de20ee6b6ca6f755d59bc502f819079a3c94ac",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "curl",
+   "version": "8.23.0",
+   "license": "curl",
+   "scope": "r0",
+   "purl": "pkg:generic/curl@8.23.0",
+   "vcs": "https://github.com/curl/curl",
+   "commit": "3163ec065643ba20709f190111f42c3e1fe95273",
+   "parent": "curl_cffi",
+   "note": "libcurl/8.23.0-IMPERSONATE, statically linked in curl_cffi/_wrapper.abi3.so"
+  },
+  {
+   "name": "boringssl",
+   "version": "156c7b75ae9b8c3b3f847acf264f17594c3859fb",
+   "license": "Apache-2.0 AND ISC AND OpenSSL",
+   "scope": "r0",
+   "purl": "pkg:github/google/boringssl@156c7b75ae9b8c3b3f847acf264f17594c3859fb",
+   "vcs": "https://github.com/google/boringssl",
+   "commit": "156c7b75ae9b8c3b3f847acf264f17594c3859fb",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "nghttp2",
+   "version": "1.63.0",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:github/nghttp2/nghttp2@v1.63.0",
+   "vcs": "https://github.com/nghttp2/nghttp2",
+   "commit": "8f44147c385fb1ed93a6f39911eeb30279bfd2dd",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "ngtcp2",
+   "version": "1.20.0",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:github/ngtcp2/ngtcp2@v1.20.0",
+   "vcs": "https://github.com/ngtcp2/ngtcp2",
+   "commit": "ca898d32348c93af9fbbc81538505a1c1c062685",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "nghttp3",
+   "version": "1.15.0",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:github/ngtcp2/nghttp3@v1.15.0",
+   "vcs": "https://github.com/ngtcp2/nghttp3",
+   "commit": "d326f4c1eb3f6a780d77793b30e16756c498f913",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "c-ares",
+   "version": "1.34.9",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:github/c-ares/c-ares@v1.34.9",
+   "vcs": "https://github.com/c-ares/c-ares",
+   "commit": "bc91829cce983a35ec01f5dbc05465858a3df469",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "brotli (static in libcurl)",
+   "version": "1.2.1",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:github/google/brotli@v1.2.1",
+   "vcs": "https://github.com/google/brotli",
+   "commit": "db24a98aed38a16de78cc05ca15cdd8dc2a0d92d",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "zstd (static in libcurl)",
+   "version": "1.5.7",
+   "license": "BSD-3-Clause",
+   "scope": "r0",
+   "purl": "pkg:github/facebook/zstd@v1.5.7",
+   "vcs": "https://github.com/facebook/zstd",
+   "commit": "f8745da6ff1ad1e7bab384bd1f9d742439278e99",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "zlib (static in libcurl)",
+   "version": "1.3.1",
+   "license": "Zlib",
+   "scope": "r0",
+   "purl": "pkg:github/madler/zlib@v1.3.1",
+   "vcs": "https://github.com/madler/zlib",
+   "commit": "51b7f2abdade71cd9bb0e7a373ef2610ec6f9daf",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "libc++ (curl_cffi.libs)",
+   "version": "NDK",
+   "license": "Apache-2.0 WITH LLVM-exception",
+   "scope": "r0",
+   "vcs": "https://github.com/llvm/llvm-project",
+   "parent": "curl_cffi"
+  },
+  {
+   "name": "cffi",
+   "version": "2.1.1",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:pypi/cffi@2.1.1",
+   "vcs": "https://github.com/python-cffi/cffi",
+   "commit": "fd33e7700f0ebafe6f30bd5053f13327221b77a2",
+   "note": "built from the PyPI sdist with recipes/python-cffi (Termux)",
+   "abis": [
+    "arm64-v8a"
+   ]
+  },
+  {
+   "name": "brotli (Python)",
+   "version": "1.2.1",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:pypi/brotli@1.2.1",
+   "vcs": "https://github.com/google/brotli",
+   "commit": "db24a98aed38a16de78cc05ca15cdd8dc2a0d92d",
+   "note": "built with termux-packages python-brotli"
+  },
+  {
+   "name": "brotli (libbrotlicommon/dec/enc)",
+   "version": "1.2.1",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:generic/brotli@1.2.1",
+   "vcs": "https://github.com/google/brotli",
+   "commit": "db24a98aed38a16de78cc05ca15cdd8dc2a0d92d",
+   "note": "built with termux-packages brotli"
+  },
+  {
+   "name": "certifi",
+   "version": "2026.10.23",
+   "license": "MPL-2.0",
+   "scope": "r0",
+   "purl": "pkg:pypi/certifi@2026.10.23",
+   "vcs": "https://github.com/certifi/python-certifi",
+   "commit": "b60466c9f2882d9cf088943c650b0faac06c080c",
+   "note": "also copied to usr/etc/tls/cert.pem"
+  },
+  {
+   "name": "urllib3",
+   "version": "2.8.0",
+   "license": "MIT",
+   "scope": "r0",
+   "purl": "pkg:pypi/urllib3@2.8.0",
+   "vcs": "https://github.com/urllib3/urllib3",
+   "commit": "b1d30ab61fe0db8f11092805e8c5ac43e091064a"
+  },
+  {
+   "name": "yt-dlp",
+   "version": "2026.10.26",
+   "license": "Unlicense",
+   "scope": "r0",
+   "purl": "pkg:pypi/yt-dlp@2026.10.26",
+   "vcs": "https://github.com/yt-dlp/yt-dlp",
+   "commit": "f264a6cbd1f630894da0f368df00f8aae50140e0",
+   "note": "zipimport binary in res/raw/ytdlp"
+  },
+  {
+   "name": "yt-dlp-ejs",
+   "version": "0.8.0",
+   "license": "Unlicense",
+   "scope": "r0",
+   "purl": "pkg:pypi/yt-dlp-ejs@0.8.0",
+   "vcs": "https://github.com/yt-dlp/ejs",
+   "parent": "yt-dlp"
+  },
+  {
+   "name": "cpython",
+   "version": "3.14.6",
+   "license": "PSF-2.0",
+   "scope": "upstream",
+   "purl": "pkg:generic/cpython@3.14.6"
+  },
+  {
+   "name": "openssl",
+   "version": "3.6.3",
+   "license": "Apache-2.0",
+   "scope": "upstream",
+   "purl": "pkg:generic/openssl@3.6.3"
+  },
+  {
+   "name": "quickjs",
+   "version": "2025-04-26",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:generic/quickjs@2025-04-26"
+  },
+  {
+   "name": "readline",
+   "version": "8.3.3",
+   "license": "GPL-3.0-or-later",
+   "scope": "upstream",
+   "purl": "pkg:generic/readline@8.3.3"
+  },
+  {
+   "name": "gdbm",
+   "version": "1.26",
+   "license": "GPL-3.0-or-later",
+   "scope": "upstream",
+   "purl": "pkg:generic/gdbm@1.26"
+  },
+  {
+   "name": "ncurses",
+   "version": "6.5.20250830",
+   "license": "X11",
+   "scope": "upstream",
+   "purl": "pkg:generic/ncurses@6.5.20250830"
+  },
+  {
+   "name": "sqlite",
+   "version": "3.53.3",
+   "license": "blessing",
+   "scope": "upstream",
+   "purl": "pkg:generic/sqlite@3.53.3"
+  },
+  {
+   "name": "expat",
+   "version": "2.8.2",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:generic/expat@2.8.2"
+  },
+  {
+   "name": "libffi",
+   "version": "3.5.2",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:generic/libffi@3.5.2"
+  },
+  {
+   "name": "xz",
+   "version": "5.8.3",
+   "license": "0BSD",
+   "scope": "upstream",
+   "purl": "pkg:generic/xz@5.8.3"
+  },
+  {
+   "name": "bzip2",
+   "version": "1.0.8",
+   "license": "bzip2-1.0.6",
+   "scope": "upstream",
+   "purl": "pkg:generic/bzip2@1.0.8"
+  },
+  {
+   "name": "zlib",
+   "version": "1.3.2",
+   "license": "Zlib",
+   "scope": "upstream",
+   "purl": "pkg:generic/zlib@1.3.2"
+  },
+  {
+   "name": "zstd",
+   "version": "1.5.7",
+   "license": "BSD-3-Clause",
+   "scope": "upstream",
+   "purl": "pkg:generic/zstd@1.5.7"
+  },
+  {
+   "name": "tcl",
+   "version": "8.6.14",
+   "license": "TCL",
+   "scope": "upstream",
+   "purl": "pkg:generic/tcl@8.6.14"
+  },
+  {
+   "name": "tk",
+   "version": "8.6.14",
+   "license": "TCL",
+   "scope": "upstream",
+   "purl": "pkg:generic/tk@8.6.14"
+  },
+  {
+   "name": "freetype",
+   "version": "2.14.3",
+   "license": "FTL",
+   "scope": "upstream",
+   "purl": "pkg:generic/freetype@2.14.3"
+  },
+  {
+   "name": "fontconfig",
+   "version": "2.18.2",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:generic/fontconfig@2.18.2"
+  },
+  {
+   "name": "libpng",
+   "version": "1.6.58",
+   "license": "libpng-2.0",
+   "scope": "upstream",
+   "purl": "pkg:generic/libpng@1.6.58"
+  },
+  {
+   "name": "libx11",
+   "version": "1.8.13",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:generic/libx11@1.8.13"
+  },
+  {
+   "name": "libxcb",
+   "version": "1.17.0",
+   "license": "X11",
+   "scope": "upstream",
+   "purl": "pkg:generic/libxcb@1.17.0"
+  },
+  {
+   "name": "pip",
+   "version": "26.1.2",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:pypi/pip@26.1.2"
+  },
+  {
+   "name": "requests",
+   "version": "2.34.2",
+   "license": "Apache-2.0",
+   "scope": "upstream",
+   "purl": "pkg:pypi/requests@2.34.2"
+  },
+  {
+   "name": "idna",
+   "version": "3.18",
+   "license": "BSD-3-Clause",
+   "scope": "upstream",
+   "purl": "pkg:pypi/idna@3.18"
+  },
+  {
+   "name": "charset-normalizer",
+   "version": "3.4.9",
+   "license": "MIT",
+   "scope": "upstream",
+   "purl": "pkg:pypi/charset-normalizer@3.4.9"
+  },
+  {
+   "name": "websockets",
+   "version": "16.1",
+   "license": "BSD-3-Clause",
+   "scope": "upstream",
+   "purl": "pkg:pypi/websockets@16.1"
+  },
+  {
+   "name": "mutagen",
+   "version": "1.48.1",
+   "license": "GPL-2.0-or-later",
+   "scope": "upstream",
+   "purl": "pkg:pypi/mutagen@1.48.1"
+  },
+  {
+   "name": "pycryptodomex",
+   "version": "3.23.0",
+   "license": "BSD-2-Clause AND Unlicense",
+   "scope": "upstream",
+   "purl": "pkg:pypi/pycryptodomex@3.23.0"
+  },
+  {
+   "name": "pycparser",
+   "version": "2.22",
+   "license": "BSD-3-Clause",
+   "scope": "upstream",
+   "purl": "pkg:pypi/pycparser@2.22"
+  }
+ ]
+}
