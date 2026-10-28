@@ -1,0 +1,45 @@
+name: CI
+
+# Secret kullanılmaz. Action'lar tam commit SHA'sıyla sabitlenir.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Statik denetimler
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Betikler derleniyor, JSON geçerli
+        run: |
+          python3 -m py_compile scripts/*.py
+          python3 -m json.tool inputs.lock > /dev/null
+      - name: Action'lar tam SHA ile sabit
+        run: python3 scripts/check_pins.py .github/workflows
+
+  inputs:
+    name: Girdiler (hash + köken)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - name: Araçlar (hash'li)
+        run: python -m pip install --require-hashes --no-deps -r requirements/tools.txt
+      - name: İndir ve doğrula (SHA-256, PyPI attestation, yt-dlp OpenPGP)
+        run: python scripts/fetch_inputs.py --attestations --gpl-sources

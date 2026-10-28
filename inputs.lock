@@ -1,0 +1,86 @@
+{
+  "_comment": "R0 inputs. Every download is checked against sha256 before use (scripts/fetch_inputs.py). Change only through a PR.",
+  "release": {
+    "tag": "python-3.14.6-r0",
+    "artifact": "runtime-python-3.14.6-r0.aar",
+    "maven_coordinates": "com.kavanozymir.indirdim:runtime-python:3.14.6-r0"
+  },
+  "inputs": {
+    "upstream_aar": {
+      "version": "io.github.deniscerri:ytdlnis_packages.python:3.14.6",
+      "url": "https://repo1.maven.org/maven2/io/github/deniscerri/ytdlnis_packages.python/3.14.6/ytdlnis_packages.python-3.14.6.aar",
+      "sha256": "ce6d36f9eff8d4c0ee1440f613285e5112ff1d8713a3a4d8d6f996d44200b115",
+      "provenance": "Maven Central; same hash as gradle/verification-metadata.xml of the app"
+    },
+    "curl_cffi_wheel": {
+      "version": "0.17.0",
+      "file": "curl_cffi-0.17.0-cp314-cp314-android_24_arm64_v8a.whl",
+      "url": "https://files.pythonhosted.org/packages/ea/ef/40e7c64a01d9928c16f79cf0bf7f1afc9be02f331a8a32e4617b60b815f1/curl_cffi-0.17.0-cp314-cp314-android_24_arm64_v8a.whl",
+      "sha256": "0d85bec9648bf7c14c3b43056ba82521740f72cd96ed7700a0e1973e7fc93f74",
+      "pypi_attestation_repository": "https://github.com/lexiforest/curl_cffi",
+      "abis": ["arm64-v8a"]
+    },
+    "cffi_sdist": {
+      "version": "2.1.1",
+      "file": "cffi-2.1.1.tar.gz",
+      "url": "https://files.pythonhosted.org/packages/9e/ef/008a1939e372c06329a3fce4279c02f328488f3526744906eeec3da7ad5f/cffi-2.1.1.tar.gz",
+      "sha256": "dd31f52ea1086513bb9df30f8fcee9b8918323ae067a3d5b78bc826a000712be",
+      "provenance": "hash only (no PyPI attestation for this sdist)",
+      "abis": ["arm64-v8a"]
+    },
+    "brotli_source": {
+      "version": "1.2.1",
+      "file": "brotli-v1.2.1.tar.gz",
+      "url": "https://github.com/google/brotli/archive/refs/tags/v1.2.1.tar.gz",
+      "sha256": "98d35d11a78dc453aebb7d10c3748f3f73ff78c8267c0dc697b8631f67bf7e8f",
+      "provenance": "hash only; equals TERMUX_PKG_SHA256 of packages/brotli and packages/python-brotli at the pinned termux-packages commit",
+      "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"]
+    },
+    "certifi_wheel": {
+      "version": "2026.10.23",
+      "file": "certifi-2026.10.23-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/32/d1/a3652fe2c19134d0d15922177821d863cbd7e842d53a21bbe7e8e3a1b5ac/certifi-2026.10.23-py3-none-any.whl",
+      "sha256": "e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1",
+      "pypi_attestation_repository": "https://github.com/certifi/python-certifi"
+    },
+    "urllib3_wheel": {
+      "version": "2.8.0",
+      "file": "urllib3-2.8.0-py3-none-any.whl",
+      "url": "https://files.pythonhosted.org/packages/92/9d/c4e665119135114480843e7ab388fa94d8480650450e6f8e26b70d323a4c/urllib3-2.8.0-py3-none-any.whl",
+      "sha256": "0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3",
+      "pypi_attestation_repository": "https://github.com/urllib3/urllib3"
+    },
+    "ytdlp_zipimport": {
+      "version": "2026.10.26",
+      "file": "yt-dlp",
+      "url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.10.26/yt-dlp",
+      "sha256": "e51e69e89489f199530f13d32a4342da3ddb2cf34842f364603a066db05afbf3",
+      "sums_url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.10.26/SHA2-256SUMS",
+      "sig_url": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.10.26/SHA2-256SUMS.sig",
+      "openpgp_fingerprint": "AC0CBBE6848D6A873464AF4E57CF65933B5A7581",
+      "openpgp_key": "keys/yt-dlp-public.key"
+    }
+  },
+  "build_env": {
+    "termux_packages": {
+      "repository": "https://github.com/termux/termux-packages",
+      "commit": "4e81bc83267eb71e4c5c2c1c9d9a1be88ffabb71",
+      "note": "descendant of 0d84f00b35df (python-brotli 1.2.1) and 16edf55274ab (brotli 1.2.1)"
+    },
+    "termux_builder_image": "ghcr.io/termux/package-builder@sha256:e2de051a518d8b188c59c4a1ecf357d373b9ccf48d6c06d7681fdc3f61a77287",
+    "repack_image": "docker.io/library/python@sha256:4178fea840d0d85a1f4d4e768b4cc2ad71b5df43954e1836650c6d239039a4a3",
+    "repack_image_tag": "python:3.13-slim-bookworm"
+  },
+  "gpl_sources": {
+    "_comment": "Corresponding Source for the GPL binaries copied unchanged from the upstream AAR (SOURCE-OFFER.md). Attached to every release.",
+    "upstream_termux_commit": "2935d0eeff6eb9270227a72dc3d87bbce9c938de",
+    "files": [
+      {"file": "readline-8.3.tar.gz", "url": "https://mirrors.kernel.org/gnu/readline/readline-8.3.tar.gz", "sha256": "fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc"},
+      {"file": "readline83-001", "url": "https://mirrors.kernel.org/gnu/readline/readline-8.3-patches/readline83-001", "sha256": "21f0a03106dbe697337cd25c70eb0edbaa2bdb6d595b45f83285cdd35bac84de"},
+      {"file": "readline83-002", "url": "https://mirrors.kernel.org/gnu/readline/readline-8.3-patches/readline83-002", "sha256": "e27364396ba9f6debf7cbaaf1a669e2b2854241ae07f7eca74ca8a8ba0c97472"},
+      {"file": "readline83-003", "url": "https://mirrors.kernel.org/gnu/readline/readline-8.3-patches/readline83-003", "sha256": "72dee13601ce38f6746eb15239999a7c56f8e1ff5eb1ec8153a1f213e4acdb29"},
+      {"file": "gdbm-1.26.tar.gz", "url": "https://mirrors.kernel.org/gnu/gdbm/gdbm-1.26.tar.gz", "sha256": "6a24504a14de4a744103dcb936be976df6fbe88ccff26065e54c1c47946f4a5e"},
+      {"file": "build_python.sh", "url": "https://raw.githubusercontent.com/deniscerri/ytdlnis-packages/c32745216eab2c643643374bb1153fc018086665/scripts/build_python.sh", "sha256": "447d377357a708e24f667d5b23ba1604ac097ab99198a2dcdecd45b8a7e61da9"}
+    ]
+  }
+}
