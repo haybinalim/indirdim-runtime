@@ -80,3 +80,94 @@ jobs:
           name: native-report-${{ matrix.abi }}
           path: out/*.json
           retention-days: 7
+
+  repack:
+    name: Yeniden paketleme (${{ matrix.slot }}, ${{ matrix.os }})
+    needs: native-check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - { slot: a, os: ubuntu-24.04 }
+          - { slot: b, os: ubuntu-22.04 }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: native-*-b1
+          path: out/native
+          merge-multiple: true
+      - name: Girdiler (SHA-256)
+        run: python3 scripts/fetch_inputs.py --only upstream_aar curl_cffi_wheel certifi_wheel urllib3_wheel ytdlp_zipimport
+      - name: Deterministik yeniden paketleme (sabit imaj)
+        run: |
+          IMAGE=$(jq -r .build_env.repack_image inputs.lock)
+          docker run --rm --network none -u "$(id -u):$(id -g)" -v "$PWD:/w" -w /w "$IMAGE" \
+            python scripts/repack.py --aar work/inputs/ytdlnis_packages.python-3.14.6.aar \
+              --native out/native --inputs work/inputs --out out/repack
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: repack-${{ matrix.slot }}
+          path: out/repack
+          retention-days: 3
+          if-no-files-found: error
+
+  verify:
+    name: Doğrulama (tekrar üretilebilirlik, içerik, ELF, SBOM)
+    needs: repack
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --require-hashes --no-deps -r requirements/tools.txt
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repack-a
+          path: out/a
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: repack-b
+          path: out/b
+      - name: İki bağımsız işte aynı SHA-256
+        run: |
+          ART=$(jq -r .release.artifact inputs.lock)
+          sha256sum out/a/$ART out/b/$ART
+          test "$(sha256sum < out/a/$ART)" = "$(sha256sum < out/b/$ART)"
+          cmp out/a/diff-manifest.txt out/b/diff-manifest.txt
+      - name: İçerik kapıları
+        run: |
+          python scripts/fetch_inputs.py --only upstream_aar
+          ART=$(jq -r .release.artifact inputs.lock)
+          python scripts/check_runtime.py --upstream work/inputs/ytdlnis_packages.python-3.14.6.aar \
+            --aar out/a/$ART --diff out/a/diff-manifest.txt --json out/a/check-runtime.json
+      - name: ELF kapıları (son ağaç, tüm ABI'ler)
+        run: |
+          ART=$(jq -r .release.artifact inputs.lock)
+          SYSROOT="$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+          rc=0
+          for abi in arm64-v8a armeabi-v7a x86 x86_64; do
+            python scripts/ziptree.py extract-aar work/inputs/ytdlnis_packages.python-3.14.6.aar $abi work/up-$abi
+            python scripts/ziptree.py extract-aar out/a/$ART $abi work/new-$abi
+            files=$(awk -v a="$abi:" '($1=="A"||$1=="M") && index($2,a)==1 && $2 ~ /\.so$/ {sub(a,"",$2); print $2}' out/a/diff-manifest.txt)
+            python scripts/elfcheck.py --tree work/new-$abi --upstream-tree work/up-$abi --abi $abi \
+              --ndk-sysroot "$SYSROOT" --json out/a/elfcheck-$abi.json $files || rc=1
+          done
+          exit $rc
+      - name: SBOM ve SHA256SUMS
+        run: |
+          ART=$(jq -r .release.artifact inputs.lock)
+          python scripts/sbom.py --aar out/a/$ART --out out/a/sbom.cdx.json \
+            --timestamp "$(git log -1 --format=%cI)"
+          (cd out/a && sha256sum "$ART" diff-manifest.txt sbom.cdx.json > SHA256SUMS && cat SHA256SUMS)
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: r0-output
+          path: out/a
+          retention-days: 7
+          if-no-files-found: error
