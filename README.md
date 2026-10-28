@@ -27,6 +27,17 @@ değişir / Only these change:
 Geri kalan her şey (libpython, stdlib, OpenSSL, QuickJS `libqjs.so`, `libpython.so` başlatıcısı) upstream'den
 bayt bayt aynen gelir. / Everything else is copied byte for byte from upstream.
 
+## Yayım / Release
+
+`release.yml` (elle, `workflow_dispatch`, yalnızca `main`): derleme hattını baştan koşar (native derlemeler,
+iki runner'da yeniden paketleme ve SHA-256 eşitliği, içerik/ELF/16 KB kapıları, SBOM), GPL kaynaklarını ve
+lisansları ekler, `actions/attest-build-provenance` ile AAR, SBOM ve `SHA256SUMS` için attestation üretir ve
+release'i yayımlar. Varlıklar: AAR, `SHA256SUMS`, `diff-manifest.txt`, `sbom.cdx.json`, `SOURCES.md`, `NOTICE`,
+`SOURCE-OFFER.md`, `licenses.tar.gz`, readline/gdbm kaynakları, termux tarifleri.
+
+`release.yml` (manual, `main` only) re-runs the whole pipeline, adds GPL sources and licenses, attests the AAR,
+SBOM and `SHA256SUMS`, and publishes the release.
+
 ## Doğrulama / Verification
 
 ```sh
